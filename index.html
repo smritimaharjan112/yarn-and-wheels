@@ -167,8 +167,7 @@
     position:absolute; inset:0; z-index:0;
   }
   .hero-art img.logo-big{
-    width: 400px;
-    max-width: none;
+    width: clamp(220px, 45vw, 400px);
     position:relative; z-index:2;
     filter:drop-shadow(0 20px 40px rgba(43,33,25,0.18));
     animation:float 6s ease-in-out infinite;
@@ -211,7 +210,7 @@
   .about p + p{margin-top:14px;}
 
   /* ---------- FEATURED ---------- */
-  .featured{background:var(--coral-tint); padding:90px 0;}
+  .featured{background:var(--coral-tint); padding:20px 0;}
   .section-head{
     display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;
     margin-bottom:44px;
@@ -371,6 +370,7 @@
     .mobile-menu{display:flex;}
     .hero-inner, .about-inner, .custom-inner{grid-template-columns:1fr; gap:40px;}
     .hero-art{order:-1; min-height:260px;}
+    .hero-art img.logo-big{width: clamp(220px, 65vw, 340px);}
     .about-visual{aspect-ratio:16/9; padding:28px;}
     .product-grid{grid-template-columns:repeat(2, 1fr);}
     .why-grid{grid-template-columns:repeat(2, 1fr);}
@@ -382,6 +382,9 @@
   @media (max-width: 560px){
     .wrap{padding:0 20px;}
     .hero{padding:32px 0 40px;}
+    .hero h1{font-size:1.75rem;}
+    .hero-art{min-height:auto;}
+    .hero-art img.logo-big{width:300px;}
     .hero-cta{flex-direction:column; align-items:stretch;}
     .hero-cta .btn{justify-content:center;}
     .product-grid{grid-template-columns:1fr;}
@@ -564,7 +567,7 @@
       </div>
       <div class="why-grid reveal">
         <div class="why-card">
-          <svg class="ico" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="var(--coral)"/><path d="M16,24c2-6 14-6 16,0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+          <svg class="ico" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="var(--coral)"/><g fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="23" r="9"/><path d="M12,19 Q20,26 28,19"/><path d="M12,27 Q20,20 28,27"/><path d="M14,15 Q23,23 15,31"/><path d="M26,15 Q17,23 25,31"/><path d="M13,29 C9,33 18,37 26,34 C32,32 37,35 40,32"/><path d="M17,30 L34,11" stroke-width="2"/><circle cx="34" cy="11" r="1.3" fill="#fff" stroke="none"/></g></svg>
           <h3>Handcrafted</h3>
           <p>Every piece is made by hand with care.</p>
         </div>
@@ -699,6 +702,24 @@
   menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
     menu.classList.remove('open');
     burger.setAttribute('aria-expanded', 'false');
+  }));
+
+  // Nav links should land at the top of each section, clear of the sticky
+  // header — native anchor scroll would tuck the section's top edge right
+  // under the header, hiding it.
+  const siteHeader = document.querySelector('header.site-nav');
+  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', (e) => {
+    const id = a.getAttribute('href').slice(1);
+    if (id === 'top') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    const y = target.getBoundingClientRect().top + window.pageYOffset - siteHeader.offsetHeight;
+    window.scrollTo({ top: y, behavior: 'smooth' });
   }));
 
   // scroll reveal
